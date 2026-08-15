@@ -21,6 +21,7 @@ const (
 var (
 	ErrNotFound          = errors.New("商品不存在")
 	ErrEmptySKU          = errors.New("商品 SKU 不能为空")
+	ErrInvalidSKU        = errors.New("商品 SKU 包含非法字符")
 	ErrDuplicateSKU      = errors.New("商品 SKU 已存在")
 	ErrEmptyName         = errors.New("商品名称不能为空")
 	ErrInvalidStock      = errors.New("初始库存必须为零或正数")
@@ -104,6 +105,9 @@ func (s *Store) Create(in CreateInput, now time.Time) (*Product, error) {
 	in.SKU = trim(in.SKU)
 	if in.SKU == "" {
 		return nil, ErrEmptySKU
+	}
+	if strings.ContainsAny(in.SKU, "/%") {
+		return nil, ErrInvalidSKU
 	}
 	in.Name = trim(in.Name)
 	if in.Name == "" {
